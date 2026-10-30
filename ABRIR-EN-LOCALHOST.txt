@@ -1,0 +1,9 @@
+CAMINO A DAYTONA - cómo verla en localhost
+
+1. Descomprime esta carpeta (por ejemplo en el Escritorio).
+2. Abre la app Terminal en tu Mac.
+3. Escribe "cd " (con espacio), arrastra la carpeta camino-a-daytona a la Terminal y presiona Enter.
+4. Escribe:  python3 -m http.server 8000   y presiona Enter.
+5. Abre en el navegador:  http://localhost:8000
+
+Para detenerlo: en la Terminal presiona Control + C.

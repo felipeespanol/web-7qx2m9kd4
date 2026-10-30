@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Camino a Daytona</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;800;900&family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: night-race editorial. Full-bleed bands, slanted "pit board" cuts, one chapter per driver, telemetry labels in mono. */
+:root{
+  --ink:#0c0b0d;        /* asphalt at night */
+  --ink-2:#17151a;      /* garage floor */
+  --bone:#f2eee6;       /* pit-wall paint */
+  --muted:#9b958c;      /* tyre dust */
+  --line:rgba(242,238,230,.14);
+  --daytona:#e8202a;    /* WORL1 / Alejo red */
+  --dani:#ff2f8f;       /* Dani's magenta livery */
+  --accent:var(--daytona);
+  --f-display:"Big Shoulders Display","Oswald","Arial Narrow",Impact,sans-serif;
+  --f-serif:"Instrument Serif","Times New Roman",Georgia,serif;
+  --f-body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --gut:max(16px, env(safe-area-inset-left,0px));
+  --gutR:max(16px, env(safe-area-inset-right,0px));
+  --wrap:1320px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--bone);font-family:var(--f-body);font-size:16px;line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--ink)}
+a{color:inherit}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:var(--wrap);margin-inline:auto;padding-left:var(--gut);padding-right:var(--gutR)}
+.mono{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.serif{font-family:var(--f-serif);font-style:italic;font-weight:400;letter-spacing:-.01em;text-transform:none}
+
+/* ---------- preloader ---------- */
+.loader{position:fixed;inset:0;z-index:100;background:var(--ink);display:grid;place-items:center;transition:transform .9s cubic-bezier(.7,0,.2,1)}
+.loader.out{transform:translateY(-101%)}
+.loader .bars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.loader .bars i{position:absolute;height:28px;background:var(--daytona);transform:skewX(-24deg);animation:streak 1.1s cubic-bezier(.6,0,.3,1) infinite}
+.loader .bars i:nth-child(2){background:var(--dani);animation-delay:.25s}
+.loader .bars i:nth-child(3){animation-delay:.5s;height:10px}
+@keyframes streak{from{left:-40%;width:20%}to{left:120%;width:45%}}
+.loader .count{font-family:var(--f-display);font-weight:900;font-size:clamp(80px,16vw,200px);line-height:.8;font-variant-numeric:tabular-nums;position:relative}
+.loader .lbl{position:absolute;bottom:calc(28px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;color:var(--muted)}
+
+/* ---------- header ---------- */
+.hdr{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:50;padding-left:var(--gut);padding-right:var(--gutR);padding-block:14px;display:flex;align-items:center;gap:20px;transition:background .3s,backdrop-filter .3s}
+.hdr.solid{background:rgba(12,11,13,.82);backdrop-filter:blur(10px)}
+.hdr .logo{display:flex;align-items:center;gap:14px}
+.hdr .logo img{height:40px;width:auto}
+.hdr .logo img.cg{height:20px;opacity:0;transition:opacity .3s}
+.hdr.solid .logo img.cg{opacity:1}
+@media (max-width:520px){.hdr .logo img.cg{display:none}}
+.hdr nav{display:flex;gap:22px;margin-left:auto}
+.hdr nav a{text-decoration:none;opacity:.78;transition:opacity .2s}
+.hdr nav a:hover{opacity:1}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#fff;text-decoration:none;font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:12px 18px;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);transition:filter .2s,transform .2s;border:0;cursor:pointer}
+.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn.ghost{background:var(--bone);color:var(--ink)}
+.burger{display:none;background:none;border:1px solid var(--line);color:var(--bone);padding:9px 12px;cursor:pointer}
+@media (max-width:900px){
+  .hdr nav{position:fixed;inset:0;top:0;background:var(--ink);flex-direction:column;justify-content:center;align-items:flex-start;padding-left:var(--gut);padding-right:var(--gutR);gap:6px;transform:translateX(100%);transition:transform .45s cubic-bezier(.7,0,.2,1)}
+  .hdr nav.open{transform:none}
+  .hdr nav a{font-family:var(--f-display);font-weight:800;font-size:clamp(44px,13vw,72px);letter-spacing:0;text-transform:uppercase;opacity:1;line-height:1}
+  .burger{display:inline-block;margin-left:auto;position:relative;z-index:2}
+  .hdr .btn{display:none}
+}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:clamp(620px,96svh,1000px);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;isolation:isolate}
+.hero .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-4;object-position:50% 30%}
+.slides{position:absolute;inset:0;z-index:-3;overflow:hidden}
+.slides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:kb 30s linear infinite;will-change:opacity,transform}
+.slides img:nth-child(1){opacity:1;animation-delay:-1s}
+.slides img:nth-child(2){animation-delay:5s}
+.slides img:nth-child(3){animation-delay:11s}
+.slides img:nth-child(4){animation-delay:17s}
+.slides img:nth-child(5){animation-delay:23s}
+@keyframes kb{0%{opacity:0;transform:scale(1.14) translate3d(1.5%,0,0)}5%{opacity:1}20%{opacity:1}25%{opacity:0;transform:scale(1.02) translate3d(-1.5%,0,0)}100%{opacity:0;transform:scale(1.02)}}
+.dest{display:flex;flex-direction:column;align-items:flex-end;gap:8px;color:var(--muted)}
+.dest img{height:56px;width:auto}
+.dt-logo{background:var(--bone);display:inline-flex;padding:22px 28px;margin-bottom:34px;clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.dt-logo img{height:clamp(64px,8vw,96px);width:auto}
+.hero::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(12,11,13,.55) 0%,rgba(12,11,13,.25) 40%,rgba(12,11,13,.92) 88%,var(--ink) 100%)}
+.cuts{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.cuts i{position:absolute;background:var(--ink);transform:skewX(-24deg)}
+.cuts i.r{background:var(--daytona)}
+.cuts i.p{background:var(--dani)}
+.hero-inner{padding-block:150px 48px}
+.lockup{position:absolute;z-index:2;top:calc(env(safe-area-inset-top,0px) + 76px);left:max(var(--gut), calc((100% - var(--wrap)) / 2 + 16px));display:flex;flex-wrap:wrap;align-items:center;gap:10px clamp(14px,2vw,24px);padding:16px clamp(8px,1vw,12px) 16px 0;width:fit-content;max-width:calc(100% - var(--gut) - var(--gutR))}
+.lockup::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:-100vw;right:-56px;background:var(--ink);transform:skewX(-24deg);transform-origin:bottom}
+.lockup .lk-worl1{height:clamp(40px,4.4vw,60px);width:auto}
+.lockup .lk-claro{height:clamp(54px,5.4vw,74px);width:auto}
+.lockup .lk-taki{height:clamp(48px,5vw,68px);width:auto}
+.lockup .x{font-family:var(--f-serif);font-style:italic;font-size:clamp(22px,2vw,30px);line-height:1;color:var(--bone);opacity:.7}
+.hdr .logo{opacity:0;pointer-events:none;transition:opacity .3s}
+.hdr.solid .logo{opacity:1;pointer-events:auto}
+.hdr{transition:background .3s,backdrop-filter .3s,transform .3s}
+.lockup .lk-txt{color:var(--bone);opacity:.75;line-height:1.5;border-left:1px solid var(--line);padding-left:clamp(14px,2vw,24px)}
+@media (max-width:620px){.lockup .lk-txt{display:none}.lockup{gap:8px 12px;padding:10px 12px}.lockup .lk-worl1{height:34px}.lockup .lk-claro{height:40px}.lockup .lk-taki{height:26px}.lockup .x{font-size:18px}}
+.h-title{margin:0;line-height:.82;text-transform:uppercase}
+.h-title .serif{display:block;font-size:clamp(46px,8.5vw,128px);line-height:.9;margin-bottom:-.06em;padding-left:.06em}
+.h-title .big{display:block;font-family:var(--f-display);font-weight:900;font-size:clamp(92px,22vw,330px);letter-spacing:-.01em}
+.h-title .big span{color:#e50914}
+.h-foot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) auto;gap:16px 32px;align-items:end;margin-top:28px;border-top:1px solid var(--line);padding-top:20px}
+.chip{display:flex;gap:14px;align-items:center;text-decoration:none;min-width:0}
+.chip .no{font-family:var(--f-display);font-weight:900;font-size:44px;line-height:1;color:var(--c)}
+.chip strong{display:block;font-family:var(--f-display);font-weight:800;font-size:26px;text-transform:uppercase;letter-spacing:.02em;line-height:1}
+.chip small{color:var(--muted)}
+.scroll-cue{color:var(--muted);display:flex;align-items:center;gap:10px}
+.scroll-cue i{width:1px;height:36px;background:linear-gradient(var(--bone),transparent);animation:cue 1.6s ease-in-out infinite}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@media (max-width:700px){.h-foot{grid-template-columns:1fr}.dest{align-items:flex-start}.dest img{height:46px}}
+
+/* ---------- marquee ---------- */
+.marquee{overflow:hidden;border-block:1px solid var(--line);padding-block:14px;white-space:nowrap}
+.marquee .track{display:inline-flex;gap:40px;animation:mq 38s linear infinite;font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(40px,7vw,96px);line-height:1}
+.marquee.rev .track{animation-direction:reverse;animation-duration:44s}
+.marquee .track > span{display:inline-flex;align-items:center;gap:40px}
+.marquee .serif{font-size:.82em;color:var(--accent)}
+.marquee .o{color:transparent;-webkit-text-stroke:1.5px var(--bone)}
+.marquee .flag{width:.5em;height:.5em;background:var(--accent);transform:skewX(-24deg)}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ---------- section scaffolding ---------- */
+section{position:relative}
+.band{padding-block:clamp(72px,11vw,150px)}
+.eyebrow{color:var(--muted);display:flex;gap:12px;align-items:center;margin-bottom:28px}
+.eyebrow::before{content:"";width:18px;height:10px;background:var(--accent);transform:skewX(-24deg)}
+h2{font-family:var(--f-display);font-weight:900;text-transform:uppercase;line-height:.88;margin:0;font-size:clamp(52px,9vw,140px);text-wrap:balance}
+h2 .serif{font-size:.8em}
+
+/* manifesto */
+#mani{font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:clamp(36px,5.2vw,80px);line-height:.98;margin:0;max-width:22ch;text-wrap:balance}
+#mani .w{opacity:.22;transition:opacity .35s}
+#mani .w.on{opacity:1}
+#mani .serif{text-transform:none}
+.manifesto .side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,360px);gap:clamp(32px,5vw,72px);align-items:end}
+.manifesto .side aside{color:var(--muted);max-width:42ch;font-size:17px;line-height:1.6}
+.manifesto .side aside p{margin:0 0 14px}
+.manifesto .side aside b{color:var(--bone);font-weight:600}
+@media (max-width:800px){.manifesto .side{grid-template-columns:1fr}}
+
+/* drivers split */
+.split{display:grid;grid-template-columns:1fr 1fr;min-height:clamp(520px,80vh,860px)}
+.d-card{position:relative;overflow:hidden;text-decoration:none;display:flex;flex-direction:column;justify-content:flex-end;padding:32px max(24px,var(--gut));isolation:isolate;min-height:520px}
+.d-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform 1.2s cubic-bezier(.2,.7,.2,1),filter .6s;filter:grayscale(.85) contrast(1.05)}
+.d-card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 35%,rgba(12,11,13,.9))}
+.d-card:hover img{transform:scale(1.05);filter:none}
+.d-card .tag{position:absolute;top:24px;left:max(24px,var(--gut));background:var(--c);color:#fff;padding:6px 12px 6px 14px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.d-card .nm{font-family:var(--f-display);font-weight:900;text-transform:uppercase;line-height:.84;font-size:clamp(56px,8.4vw,128px)}
+.d-card .nm .serif{display:block;font-size:.5em;color:var(--c);line-height:1}
+.d-card .meta{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px;margin-top:16px;color:var(--muted)}
+.d-card .meta span:last-child{color:var(--bone)}
+@media (max-width:800px){.split{grid-template-columns:1fr}.d-card{min-height:72svh}}
+
+/* driver chapter */
+.chapter{--accent:var(--c);border-top:1px solid var(--line);overflow:hidden}
+.ch-head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(28px,5vw,80px);align-items:start}
+.ch-num{font-family:var(--f-display);font-weight:900;font-size:clamp(160px,26vw,380px);line-height:.75;color:transparent;-webkit-text-stroke:2px var(--c);position:absolute;right:max(-20px,calc(var(--gutR) - 40px));top:40px;z-index:-1;opacity:.5;pointer-events:none}
+.ch-name{font-family:var(--f-display);font-weight:900;text-transform:uppercase;line-height:.82;font-size:clamp(70px,12vw,190px);margin:0}
+.ch-name .serif{display:block;font-size:.42em;color:var(--c);line-height:1.1}
+.ch-lede{font-size:clamp(18px,1.6vw,21px);line-height:1.5;max-width:46ch;margin:0 0 22px}
+.ch-body{color:var(--muted);max-width:56ch}
+.ch-body p{margin:0 0 14px}
+.portrait{position:relative;aspect-ratio:4/5;max-width:100%;overflow:hidden;clip-path:polygon(12% 0,100% 0,88% 100%,0 100%)}
+.portrait img{width:100%;height:100%;object-fit:cover}
+.portrait::after{content:"";position:absolute;inset:auto 0 0 0;height:8px;background:var(--c)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-block:1px solid var(--line);margin-block:clamp(40px,6vw,72px)}
+.stat{padding:22px 18px 22px 0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.stat + .stat{border-left:1px solid var(--line);padding-left:18px}
+.stat .v{font-family:var(--f-display);font-weight:900;font-size:clamp(46px,6vw,88px);line-height:.9;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:.45em;color:var(--c);margin-left:2px}
+.stat .k{color:var(--muted)}
+.path{display:flex;flex-wrap:wrap;gap:8px 4px;align-items:center;font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:clamp(26px,3.4vw,46px);line-height:1;margin-bottom:24px}
+.path .arrow{color:var(--c);font-family:var(--f-serif);font-style:italic;font-weight:400;padding-inline:8px}
+.socials{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+@media (max-width:860px){.ch-head{grid-template-columns:1fr}.portrait{max-width:420px}.stats{grid-template-columns:1fr}.stat + .stat{border-left:0;border-top:1px solid var(--line);padding-left:0}}
+
+/* gallery rail */
+.rail-wrap{position:relative}
+.rail-ctl{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.rail-ctl .arrows{display:flex;gap:8px}
+.rail-ctl button{background:none;border:1px solid var(--line);color:var(--bone);width:48px;height:48px;cursor:pointer;font-size:18px;transition:background .2s,border-color .2s}
+.rail-ctl button:hover{background:var(--c);border-color:var(--c)}
+.rail{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:thin;scrollbar-color:var(--c) transparent;cursor:grab}
+.rail.drag{cursor:grabbing;scroll-snap-type:none}
+.rail figure{margin:0;flex:0 0 auto;scroll-snap-align:start;position:relative}
+.rail img{height:clamp(300px,52vh,520px);width:auto;max-width:none;object-fit:cover;user-select:none;-webkit-user-drag:none}
+.rail figure.wide img{aspect-ratio:3/2}
+.rail figure.tall img{aspect-ratio:3/4}
+.rail figcaption{position:absolute;left:12px;bottom:12px;background:rgba(12,11,13,.75);padding:5px 9px;color:var(--bone)}
+
+/* film */
+.film{background:var(--ink-2)}
+.film-box{position:relative;aspect-ratio:16/9;max-width:100%;background:#000;overflow:hidden;clip-path:polygon(0 0,100% 0,100% calc(100% - 40px),calc(100% - 40px) 100%,0 100%)}
+.film-box video{width:100%;height:100%;display:block}
+.film-play{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(180deg,rgba(12,11,13,.15),rgba(12,11,13,.6));border:0;color:var(--bone);cursor:pointer;width:100%}
+.film-play .ring{width:clamp(84px,11vw,132px);aspect-ratio:1;border-radius:50%;background:var(--daytona);display:grid;place-items:center;transition:transform .3s}
+.film-play:hover .ring{transform:scale(1.08)}
+.film-play svg{width:34%;fill:#fff;margin-left:8%}
+.film-play .mono{position:absolute;left:24px;bottom:24px}
+.film-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:36px}
+.film-head p{color:var(--muted);max-width:42ch;margin:0}
+
+/* route */
+.route-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:56px;border-top:1px solid var(--line)}
+.leg{padding:26px 22px 30px 0;position:relative;min-width:0}
+.leg + .leg{padding-left:22px;border-left:1px solid var(--line)}
+.leg .sec{color:var(--accent)}
+.leg h3{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(30px,3vw,44px);line-height:.95;margin:14px 0 12px}
+.leg p{color:var(--muted);margin:0;max-width:30ch}
+.leg .bar{position:absolute;top:-2px;left:0;height:3px;background:var(--accent);width:0;transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+.leg + .leg .bar{left:0}
+.leg.lit .bar{width:100%}
+.leg.goal h3{color:var(--accent)}
+@media (max-width:900px){.route-grid{grid-template-columns:1fr 1fr}.leg:nth-child(3){border-left:0;padding-left:0}.leg:nth-child(n+3){border-top:1px solid var(--line)}}
+@media (max-width:520px){.route-grid{grid-template-columns:1fr}.leg + .leg{border-left:0;padding-left:0;border-top:1px solid var(--line)}}
+
+/* daytona */
+.daytona{background:var(--daytona);color:#fff;overflow:hidden}
+.daytona .eyebrow{color:rgba(255,255,255,.75)}
+.daytona .eyebrow::before{background:#fff}
+.dt-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:center}
+.dt-grid h2 .serif{color:var(--ink)}
+.track-svg{width:100%;height:auto;overflow:visible}
+.track-svg .t{fill:none;stroke:#fff;stroke-width:7;stroke-linejoin:round;stroke-linecap:round}
+.track-svg .t2{fill:none;stroke:rgba(12,11,13,.35);stroke-width:22;stroke-linejoin:round}
+.track-svg text{fill:#fff;font-family:var(--f-mono);font-size:13px;letter-spacing:.12em}
+.track-svg .car{fill:var(--ink)}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin-top:34px;border-top:1px solid rgba(255,255,255,.35)}
+.fact{padding:18px 16px 18px 0;border-bottom:1px solid rgba(255,255,255,.35)}
+.fact:nth-child(even){padding-left:16px;border-left:1px solid rgba(255,255,255,.35)}
+.fact .v{font-family:var(--f-display);font-weight:900;font-size:clamp(40px,4.6vw,64px);line-height:.9;font-variant-numeric:tabular-nums}
+.fact .k{color:rgba(255,255,255,.8)}
+@media (max-width:860px){.dt-grid{grid-template-columns:1fr}}
+
+/* allies */
+.allies{background:var(--bone);color:var(--ink)}
+.allies .eyebrow{color:#6d675e}
+.allies h2 .serif{color:var(--daytona)}
+.ally-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:56px;border-top:1px solid rgba(12,11,13,.15)}
+.ally{padding:34px 24px 30px 0;display:flex;flex-direction:column;gap:22px;min-width:0}
+.ally + .ally{border-left:1px solid rgba(12,11,13,.15);padding-left:24px}
+.ally .lg{height:100px;display:flex;align-items:center}
+.ally .lg img{max-width:100%;object-fit:contain}
+.ally .lg img{max-height:92px;width:auto}
+.ally .lg .wordmark{font-family:var(--f-display);font-weight:900;font-size:62px;letter-spacing:-.01em;line-height:1}
+.ally .lg .wordmark em{font-style:normal;color:var(--daytona)}
+.ally p{margin:0;color:#4d4842;max-width:34ch}
+.ally .role{color:#6d675e}
+.ally .lg img[src*="fcad"]{max-height:88px}
+@media (max-width:1050px){.ally-row{grid-template-columns:1fr 1fr}.ally:nth-child(3){border-left:0;padding-left:0}.ally:nth-child(n+3){border-top:1px solid rgba(12,11,13,.15)}}
+@media (max-width:560px){.ally-row{grid-template-columns:1fr}.ally + .ally{border-left:0;padding-left:0;border-top:1px solid rgba(12,11,13,.15)}}
+
+/* cta */
+.cta{position:relative;overflow:hidden;isolation:isolate}
+.cta img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;filter:grayscale(.6)}
+.cta::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(12,11,13,.95) 0%,rgba(12,11,13,.75) 55%,rgba(12,11,13,.35))}
+.cta h2{max-width:11ch}
+.cta p{max-width:46ch;color:#cfc9bf;font-size:18px;margin:26px 0 30px}
+.cta .row{display:flex;gap:12px;flex-wrap:wrap}
+.cta .btn.dani{--accent:var(--dani);background:var(--dani)}
+
+/* footer */
+footer{padding-block:60px calc(28px + env(safe-area-inset-bottom,0px));overflow:hidden}
+.foot-word{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(90px,24vw,380px);line-height:.78;color:transparent;-webkit-text-stroke:1.5px rgba(242,238,230,.35);white-space:nowrap;margin-bottom:40px;letter-spacing:-.01em}
+.foot-logos{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:28px 40px;padding-bottom:48px;margin-bottom:48px;border-bottom:1px solid var(--line)}
+.foot-logos img{width:auto;max-width:100%}
+@media (max-width:600px){.foot-logos{justify-content:flex-start;gap:24px 32px}.foot-logos img{transform:scale(.85);transform-origin:left center}}
+.foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--muted);border-top:1px solid var(--line);padding-top:22px}
+.foot-row a{text-decoration:none}
+.foot-row a:hover{color:var(--bone)}
+.foot-row .links{display:flex;gap:20px;flex-wrap:wrap}
+
+/* reveal: visible at rest, slight lift only */
+.rv{transform:translateY(24px);transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.rv.in{transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{transform:none}
+  #mani .w{opacity:1}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="bars"><i style="top:22%"></i><i style="top:58%"></i><i style="top:74%"></i></div>
+  <div class="count"><span id="cnt">00</span></div>
+  <div class="lbl mono">Encendiendo motores · Camino a Daytona</div>
+</div>
+
+<header class="hdr" id="hdr">
+  <a class="logo" href="#top" aria-label="WORL1 y Claro gaming, inicio"><img src="img/worl1-light.png" alt="WORL1 World Online Racing League"><img class="cg" src="img/claro-gaming-light.png" alt="Claro gaming"></a>
+  <button class="burger mono" id="burger" aria-expanded="false" aria-controls="nav">Menú</button>
+  <nav id="nav" class="mono">
+    <a href="#pilotos">Pilotos</a>
+    <a href="#dani">Dani</a>
+    <a href="#alejo">Alejo</a>
+    <a href="#pelicula">Película</a>
+    <a href="#daytona">Daytona</a>
+    <a href="#aliados">Aliados</a>
+  </nav>
+  <a class="btn" href="#apoya">Apóyalos</a>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <img class="poster" src="img/dani-sky.webp" alt="">
+    <div class="slides" aria-hidden="true">
+      <img src="img/dani-sky.webp" alt="" style="object-position:50% 30%">
+      <img src="img/alejo-gt.webp" alt="">
+      <img src="img/dani-garage.webp" alt="">
+      <img src="img/alejo-f1800b.webp" alt="">
+      <img src="img/dani-visor.webp" alt="">
+    </div>
+    <div class="cuts" aria-hidden="true">
+      <i class="r" style="left:58%;top:24%;width:18%;height:3%"></i>
+      <i style="right:-8%;top:34%;width:22%;height:12%"></i>
+      <i class="p" style="left:8%;top:52%;width:9%;height:1.4%"></i>
+    </div>
+    <div class="wrap hero-inner">
+      <div class="lockup">
+        <img class="lk-worl1" src="img/worl1-light.png" alt="WORL1 World Online Racing League">
+        <span class="x" aria-hidden="true">×</span>
+        <img class="lk-claro" src="img/claro-gaming-stack-light.png" alt="Claro gaming">
+        <span class="x" aria-hidden="true">×</span>
+        <img class="lk-taki" src="img/takiya.png" alt="TakiYA">
+        <span class="mono lk-txt">presentan</span>
+      </div>
+      <h1 class="h-title">
+        <span class="serif">Camino a</span>
+        <span class="big">Dayto<span>na</span></span>
+      </h1>
+      <div class="h-foot">
+        <a class="chip" href="#dani" style="--c:var(--dani)">
+          <span class="no">DQ</span>
+          <span><strong>Dani Quintero</strong><small class="mono">Karting · Miami, FL</small></span>
+        </a>
+        <a class="chip" href="#alejo" style="--c:var(--daytona)">
+          <span class="no">AL</span>
+          <span><strong>Alejo Luengas</strong><small class="mono">Piloto profesional · Colombia</small></span>
+        </a>
+        <div class="dest mono"><span>Destino</span><img src="img/daytona-logo-light.png" alt="Daytona International Speedway"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true"><div class="track" id="mq1"><span>Dos pilotos <i class="flag"></i> <em class="serif">un solo sueño</em> <i class="flag"></i> <b class="o">Daytona International Speedway</b> <i class="flag"></i></span></div></div>
+
+  <!-- MANIFESTO -->
+  <section class="band manifesto">
+    <div class="wrap">
+      <div class="eyebrow mono">El proyecto</div>
+      <div class="side">
+        <p id="mani">Dos colombianos. Dos caminos distintos. <span class="serif">Una sola meta:</span> la pista más famosa del mundo.</p>
+        <aside class="rv">
+          <p><b>Camino a Daytona</b> es el proyecto con el que WORL1, Claro gaming y TakiYA acompañan a Dani Quintero y Alejo Luengas en su ruta hacia Daytona International Speedway.</p>
+          <p>Uno viene del karting, campeón nacional cinco veces. El otro ya ganó en Colombia, México y Estados Unidos. Juntos cargan la bandera tricolor hacia Florida.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- DRIVERS SPLIT -->
+  <section class="split" id="pilotos" aria-label="Pilotos">
+    <a class="d-card" href="#dani" style="--c:var(--dani)">
+      <img src="img/dani-hero.webp" alt="Dani Quintero con el overol rosado junto a su monoplaza" loading="lazy">
+      <span class="tag mono">Piloto 01</span>
+      <div class="nm"><span class="serif">Daniel</span>Quintero</div>
+      <div class="meta mono"><span>Karting → monoplaza</span><span>Ver capítulo →</span></div>
+    </a>
+    <a class="d-card" href="#alejo" style="--c:var(--daytona)">
+      <img src="img/alejo-hero.webp" alt="Alejo Luengas con su casco sobre fondo rojo" loading="lazy">
+      <span class="tag mono">Piloto 02</span>
+      <div class="nm"><span class="serif">Alejo</span>Luengas</div>
+      <div class="meta mono"><span>Turismo · fórmula · coaching</span><span>Ver capítulo →</span></div>
+    </a>
+  </section>
+
+  <!-- DANI -->
+  <section class="chapter band" id="dani" style="--c:var(--dani)">
+    <div class="ch-num" aria-hidden="true">DQ</div>
+    <div class="wrap">
+      <div class="eyebrow mono">Capítulo 01 · Piloto</div>
+      <div class="ch-head">
+        <div>
+          <h2 class="ch-name rv"><span class="serif">Daniel</span>Quintero</h2>
+          <div class="ch-body" style="margin-top:34px">
+            <p class="ch-lede" style="color:var(--bone)">Piloto colombiano radicado en Miami. Creció en el karting y hoy da el salto al monoplaza con la mira puesta en Daytona.</p>
+            <p>Cinco títulos nacionales en Colombia, subcampeón del RMC International Trophy en Suramérica y finalista de las RMC Grand Finals en Portugal e Italia. Dani compite con la intensidad de quien ya sabe ganar y todavía tiene hambre.</p>
+          </div>
+          <div class="socials">
+            <a class="btn" href="https://www.instagram.com/daniquinterot/" target="_blank" rel="noopener">Instagram @daniquinterot ↗</a>
+          </div>
+        </div>
+        <div class="portrait rv"><img src="img/dani-helmet.webp" alt="Dani Quintero con casco naranja y amarillo" loading="lazy"></div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="v"><span data-count="5">5</span><small>x</small></span><span class="k mono">Campeón nacional · Colombia</span></div>
+        <div class="stat"><span class="v">Sub<small>RMC</small></span><span class="k mono">RMC International Trophy · Suramérica</span></div>
+        <div class="stat"><span class="v"><span data-count="11.6" data-dec="1">11.6</span><small>K</small></span><span class="k mono">Seguidores en Instagram</span></div>
+      </div>
+
+      <div class="rail-wrap">
+        <div class="rail-ctl"><span class="mono" style="color:var(--muted)">Galería · arrastra</span><div class="arrows"><button data-dir="-1" aria-label="Anterior">←</button><button data-dir="1" aria-label="Siguiente">→</button></div></div>
+        <div class="rail">
+          <figure class="tall"><img src="img/dani-back.webp" alt="Espalda del overol Quintero junto al monoplaza" loading="lazy"><figcaption class="mono">Garaje · Florida</figcaption></figure>
+          <figure class="wide"><img src="img/dani-garage.webp" alt="Dani sentado junto a su monoplaza rosado" loading="lazy"><figcaption class="mono">Monoplaza</figcaption></figure>
+          <figure class="tall"><img src="img/dani-car.webp" alt="Monoplaza rosado en pista" loading="lazy"><figcaption class="mono">En pista</figcaption></figure>
+          <figure class="wide"><img src="img/dani-visor.webp" alt="Mirada de Dani a través del visor" loading="lazy"><figcaption class="mono">Foco</figcaption></figure>
+          <figure class="tall"><img src="img/dani-rmc.webp" alt="Casco RMC de Dani Quintero" loading="lazy"><figcaption class="mono">RMC</figcaption></figure>
+          <figure class="wide"><img src="img/dani-sky.webp" alt="Dani celebrando con el puño en alto" loading="lazy"><figcaption class="mono">Victoria</figcaption></figure>
+          <figure class="tall"><img src="img/dani-kart.webp" alt="Dani de espaldas en el circuito de karting" loading="lazy"><figcaption class="mono">Karting · Colombia</figcaption></figure>
+          <figure class="wide"><img src="img/dani-cockpit.webp" alt="Dani dentro del cockpit" loading="lazy"><figcaption class="mono">Cockpit</figcaption></figure>
+          <figure class="tall"><img src="img/dani-pink.webp" alt="Dani con casco y overol rosado" loading="lazy"><figcaption class="mono">Listo</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE 2 -->
+  <div class="marquee rev" aria-hidden="true"><div class="track" id="mq2"><span><b class="o">Bicampeón</b> <i class="flag"></i> <em class="serif">Colombia</em> <i class="flag"></i> <b class="o">Campeón</b> <i class="flag"></i> <em class="serif">México</em> <i class="flag"></i> <b class="o">Ganador</b> <i class="flag"></i> <em class="serif">Estados Unidos</em> <i class="flag"></i></span></div></div>
+
+  <!-- ALEJO -->
+  <section class="chapter band" id="alejo" style="--c:var(--daytona)">
+    <div class="ch-num" aria-hidden="true">AL</div>
+    <div class="wrap">
+      <div class="eyebrow mono">Capítulo 02 · Piloto</div>
+      <div class="ch-head">
+        <div>
+          <h2 class="ch-name rv"><span class="serif">Alejo</span>Luengas</h2>
+          <div style="margin-top:34px">
+            <div class="path"><span>Bicampeón 🇨🇴</span><span class="arrow">→</span><span>Campeón 🇲🇽</span><span class="arrow">→</span><span>Ganador 🇺🇸</span></div>
+            <div class="ch-body">
+              <p class="ch-lede" style="color:var(--bone)">Piloto profesional de automovilismo. Ha ganado en tres países y hoy también forma a la siguiente generación.</p>
+              <p>Su carrera pasa por la Fórmula 1800 y el turismo, con títulos en Colombia y México y victorias en Estados Unidos. Fuera del auto, Alejo hace coaching 1:1 y ayuda a construir pilotos que las marcas quieren patrocinar.</p>
+            </div>
+          </div>
+          <div class="socials">
+            <a class="btn" href="https://www.instagram.com/alejoluengasg/" target="_blank" rel="noopener">Instagram @alejoluengasg ↗</a>
+            <a class="btn ghost" href="https://alejoluengasg.com" target="_blank" rel="noopener">alejoluengasg.com ↗</a>
+          </div>
+        </div>
+        <div class="portrait rv"><img src="img/alejo-helmet.webp" alt="Alejo Luengas ajustándose el casco" loading="lazy"></div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="v"><span data-count="3">3</span><small>países</small></span><span class="k mono">Colombia · México · EE. UU.</span></div>
+        <div class="stat"><span class="v"><span data-count="2">2</span><small>x</small></span><span class="k mono">Campeón en Colombia</span></div>
+        <div class="stat"><span class="v"><span data-count="7.6" data-dec="1">7.6</span><small>K</small></span><span class="k mono">Seguidores en Instagram</span></div>
+      </div>
+
+      <div class="rail-wrap">
+        <div class="rail-ctl"><span class="mono" style="color:var(--muted)">Galería · arrastra</span><div class="arrows"><button data-dir="-1" aria-label="Anterior">←</button><button data-dir="1" aria-label="Siguiente">→</button></div></div>
+        <div class="rail">
+          <figure class="wide"><img src="img/alejo-gt.webp" alt="Auto de turismo amarillo en pista" loading="lazy"><figcaption class="mono">Turismo</figcaption></figure>
+          <figure class="tall"><img src="img/alejo-cockpit.webp" alt="Alejo dentro de la jaula antivuelco" loading="lazy"><figcaption class="mono">Cockpit</figcaption></figure>
+          <figure class="wide"><img src="img/alejo-f1800.webp" alt="Fórmula 1800 amarillo número 22" loading="lazy"><figcaption class="mono">Fórmula 1800 · México</figcaption></figure>
+          <figure class="tall"><img src="img/alejo-portrait.webp" alt="Alejo con overol blanco y gafas" loading="lazy"><figcaption class="mono">Retrato</figcaption></figure>
+          <figure class="wide"><img src="img/alejo-pit.webp" alt="Parada en pits del auto amarillo" loading="lazy"><figcaption class="mono">Pits</figcaption></figure>
+          <figure class="wide"><img src="img/alejo-f1800b.webp" alt="Fórmula amarillo frente a vallas" loading="lazy"><figcaption class="mono">Copa</figcaption></figure>
+          <figure class="tall"><img src="img/alejo-studio.webp" alt="Alejo en un podcast" loading="lazy"><figcaption class="mono">Coaching · podcast</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILM -->
+  <section class="film band" id="pelicula" style="--accent:var(--daytona)">
+    <div class="wrap">
+      <div class="film-head">
+        <div><div class="eyebrow mono">La película</div><h2>Rumbo a <span class="serif">Daytona</span></h2></div>
+        <p>Oportunidad, familia y una pista de leyenda. Dani y Alejo cuentan en sus palabras por qué este es el momento.</p>
+      </div>
+      <div class="film-box">
+        <video id="film" preload="none" playsinline controls poster="img/film-poster.jpg"><source src="video/film.mp4" type="video/mp4"></video>
+        <button class="film-play" id="filmPlay" aria-label="Reproducir la película">
+          <span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l16 9-16 9z"/></svg></span>
+          <span class="mono">Ver · 0:52</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROUTE -->
+  <section class="band" id="ruta">
+    <div class="wrap">
+      <div class="eyebrow mono">La ruta</div>
+      <h2>Cuatro sectores <span class="serif">hasta la bandera</span></h2>
+      <div class="route-grid" id="route">
+        <div class="leg"><span class="bar"></span><span class="sec mono">Sector 1</span><h3>Karting</h3><p>Donde empiezan todos. Ahí Dani sumó cinco títulos nacionales y el subcampeonato RMC Suramérica.</p></div>
+        <div class="leg"><span class="bar"></span><span class="sec mono">Sector 2</span><h3>Fórmula y turismo</h3><p>El salto a autos más rápidos: monoplaza para Dani, Fórmula 1800 y turismo para Alejo.</p></div>
+        <div class="leg"><span class="bar"></span><span class="sec mono">Sector 3</span><h3>Estados Unidos</h3><p>Base en Florida, competencia internacional y victorias de Alejo en suelo estadounidense.</p></div>
+        <div class="leg goal"><span class="bar"></span><span class="sec mono">Meta</span><h3>Daytona</h3><p>Daytona International Speedway. La catedral del automovilismo americano.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DAYTONA -->
+  <section class="daytona band" id="daytona">
+    <div class="wrap dt-grid">
+      <div>
+        <div class="dt-logo"><img src="img/daytona-logo.png" alt="Daytona International Speedway"></div>
+        <div class="eyebrow mono">El destino</div>
+        <h2>Daytona <span class="serif">Beach, Florida</span></h2>
+        <div class="facts">
+          <div class="fact"><div class="v">31°</div><div class="k mono">Peralte en curvas</div></div>
+          <div class="fact"><div class="v">2.5<small style="font-size:.45em"> mi</small></div><div class="k mono">Tri-óvalo</div></div>
+          <div class="fact"><div class="v">3.56<small style="font-size:.45em"> mi</small></div><div class="k mono">Circuito de ruta</div></div>
+          <div class="fact"><div class="v">1959</div><div class="k mono">Año de inauguración</div></div>
+        </div>
+      </div>
+      <svg class="track-svg" viewBox="0 0 520 330" role="img" aria-label="Trazado del tri-óvalo de Daytona">
+        <path class="t2" d="M260 316 L400 300 C470 300 505 250 505 190 L505 140 C505 70 460 30 400 30 L120 30 C60 30 15 70 15 140 L15 190 C15 250 50 300 120 300 Z"/>
+        <path id="tri" class="t" d="M260 316 L400 300 C470 300 505 250 505 190 L505 140 C505 70 460 30 400 30 L120 30 C60 30 15 70 15 140 L15 190 C15 250 50 300 120 300 Z"/>
+        <circle class="car" r="9" id="car"/>
+        <text x="255" y="15" text-anchor="middle">BACKSTRETCH</text>
+        <text x="260" y="292" text-anchor="middle">TRI-ÓVALO · META</text>
+        <text x="40" y="168">T1–T2</text>
+        <text x="430" y="168">T3–T4</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ALLIES -->
+  <section class="allies band" id="aliados" style="--accent:var(--daytona)">
+    <div class="wrap">
+      <div class="eyebrow mono">Aliados</div>
+      <h2>Quienes empujan <span class="serif">el proyecto</span></h2>
+      <div class="ally-row">
+        <div class="ally"><div class="lg"><img src="img/worl1.png" alt="WORL1 World Online Racing League"></div><span class="role mono">Liga · organizador</span><p>World Online Racing League. El torneo de sim racing que conecta el simulador con la pista real.</p></div>
+        <div class="ally"><div class="lg"><img src="img/claro-gaming-stack.png" alt="Claro gaming"></div><span class="role mono">Aliado principal</span><p>La casa del gaming de Claro, que respalda a los pilotos colombianos en su camino a Daytona.</p></div>
+        <div class="ally"><div class="lg"><img src="img/takiya.png" alt="TakiYA"></div><span class="role mono">Aliado · entretenimiento</span><p>La taquilla digital que lleva los eventos de WORL1 a los fanáticos.</p></div>
+        <div class="ally"><div class="lg"><img src="img/fcad.png" alt="Federación Colombiana de Automovilismo FCAD"></div><span class="role mono">Federación · FIA</span><p>Federación Colombiana de Automovilismo, la entidad que rige el deporte motor en Colombia, afiliada a la FIA.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta band" id="apoya">
+    <img class="bg" src="img/dani-track.webp" alt="" loading="lazy">
+    <div class="wrap">
+      <div class="eyebrow mono">Sé parte del camino</div>
+      <h2>Súbete <span class="serif">al proyecto</span></h2>
+      <p>Marcas, aliados y fanáticos: cada apoyo cuenta para llevar a Dani y Alejo a Daytona. Escríbeles directamente y síguelos en cada carrera.</p>
+      <div class="row">
+        <a class="btn dani" href="https://www.instagram.com/daniquinterot/" target="_blank" rel="noopener">Seguir a Dani ↗</a>
+        <a class="btn" href="https://www.instagram.com/alejoluengasg/" target="_blank" rel="noopener">Seguir a Alejo ↗</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-logos">
+    <img src="img/worl1-light.png" alt="WORL1 World Online Racing League" style="height:64px">
+    <img src="img/claro-gaming-light.png" alt="Claro gaming" style="height:34px">
+    <img src="img/takiya.png" alt="TakiYA" style="height:52px">
+    <img src="img/fcad.png" alt="Federación Colombiana de Automovilismo FCAD" style="height:76px">
+    <img src="img/daytona-logo-light.png" alt="Daytona International Speedway" style="height:52px">
+  </div>
+  <div class="foot-word" aria-hidden="true">Camino a Daytona</div>
+  <div class="wrap foot-row mono">
+    <span>© 2026 WORL1 · Claro gaming · TakiYA</span>
+    <span class="links"><a href="https://www.instagram.com/daniquinterot/" target="_blank" rel="noopener">@daniquinterot</a><a href="https://www.instagram.com/alejoluengasg/" target="_blank" rel="noopener">@alejoluengasg</a><a href="#top">Volver arriba ↑</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Preloader
+  const loader = document.getElementById('loader'), cnt = document.getElementById('cnt');
+  if (reduce) { loader.hidden = true; }
+  else {
+    let n = 0; const t0 = performance.now();
+    (function tick(t){
+      n = Math.min(100, Math.round((t - t0) / 9));
+      cnt.textContent = String(n).padStart(2,'0');
+      if (n < 100) requestAnimationFrame(tick);
+      else { loader.classList.add('out'); setTimeout(()=>loader.hidden = true, 950); }
+    })(t0);
+  }
+
+  // Header
+  const hdr = document.getElementById('hdr');
+  const onScroll = () => hdr.classList.toggle('solid', scrollY > 40);
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+  const burger = document.getElementById('burger'), nav = document.getElementById('nav');
+  burger.addEventListener('click', () => { const o = nav.classList.toggle('open'); burger.setAttribute('aria-expanded', o); burger.textContent = o ? 'Cerrar' : 'Menú'; });
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { nav.classList.remove('open'); burger.setAttribute('aria-expanded', false); burger.textContent = 'Menú'; }));
+
+  // Marquee: duplicate content for a seamless loop
+  ['mq1','mq2'].forEach(id => { const t = document.getElementById(id); const s = t.innerHTML; t.innerHTML = s + s + s + s; });
+
+  // Manifesto word lighting
+  const mani = document.getElementById('mani');
+  const wrapWords = node => {
+    [...node.childNodes].forEach(c => {
+      if (c.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        c.textContent.split(/(\s+)/).forEach(w => { if (!w.trim()) frag.append(w); else { const s = document.createElement('span'); s.className = 'w'; s.textContent = w; frag.append(s); } });
+        c.replaceWith(frag);
+      } else wrapWords(c);
+    });
+  };
+  wrapWords(mani);
+  const words = [...mani.querySelectorAll('.w')];
+  const light = () => {
+    const r = mani.getBoundingClientRect(), vh = innerHeight;
+    const p = Math.max(0, Math.min(1, (vh * .85 - r.top) / (r.height + vh * .35)));
+    const k = Math.round(p * words.length);
+    words.forEach((w,i) => w.classList.toggle('on', i < k));
+  };
+  if (!reduce) { addEventListener('scroll', light, {passive:true}); light(); }
+
+  // Reveal + counters + route bars
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target; io.unobserve(el);
+    if (el.classList.contains('rv')) el.classList.add('in');
+    if (el.dataset.count) {
+      const end = parseFloat(el.dataset.count), dec = +(el.dataset.dec || 0), t0 = performance.now();
+      if (reduce) return;
+      (function step(t){ const p = Math.min(1,(t-t0)/1200), v = end * (1 - Math.pow(1-p,3)); el.textContent = v.toFixed(dec); if (p<1) requestAnimationFrame(step); })(t0);
+    }
+    if (el.id === 'route') [...el.children].forEach((leg,i) => setTimeout(()=>leg.classList.add('lit'), reduce ? 0 : i*350));
+  }), {threshold:.25});
+  document.querySelectorAll('.rv,[data-count],#route').forEach(el => io.observe(el));
+
+  // Galleries: drag + arrows
+  document.querySelectorAll('.rail-wrap').forEach(w => {
+    const rail = w.querySelector('.rail');
+    w.querySelectorAll('[data-dir]').forEach(b => b.addEventListener('click', () => rail.scrollBy({left: +b.dataset.dir * rail.clientWidth * .7, behavior: reduce ? 'auto' : 'smooth'})));
+    let down = false, sx = 0, sl = 0, moved = false;
+    rail.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; down = true; moved = false; sx = e.clientX; sl = rail.scrollLeft; rail.classList.add('drag'); });
+    addEventListener('pointermove', e => { if (!down) return; const dx = e.clientX - sx; if (Math.abs(dx) > 3) moved = true; rail.scrollLeft = sl - dx; });
+    addEventListener('pointerup', () => { if (!down) return; down = false; rail.classList.remove('drag'); });
+  });
+
+  // Film
+  const film = document.getElementById('film'), fp = document.getElementById('filmPlay');
+  fp.addEventListener('click', () => { fp.hidden = true; film.play().catch(()=>{}); });
+
+  // Daytona car lapping the tri-oval
+  const path = document.getElementById('tri'), car = document.getElementById('car');
+  const L = path.getTotalLength();
+  const place = d => { const p = path.getPointAtLength(d % L); car.setAttribute('cx', p.x); car.setAttribute('cy', p.y); };
+  place(0);
+  if (!reduce) { let d = 0, last = performance.now(); (function lap(t){ d += (t-last) * .12; last = t; place(d); requestAnimationFrame(lap); })(last); }
+
+})();
+</script>
+
+</body>
+</html>
