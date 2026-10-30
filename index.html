@@ -134,6 +134,28 @@ img{display:block;max-width:100%}
 /* ---------- section scaffolding ---------- */
 section{position:relative}
 .band{padding-block:clamp(72px,11vw,150px)}
+.gal{padding-block:clamp(72px,10vw,140px)}
+.gal-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:28px 24px;align-items:start}
+.gal figure{margin:0}
+.gal figure:nth-child(1){grid-column:2/6}
+.gal figure:nth-child(2){grid-column:7/11;margin-top:180px}
+.gal figure:nth-child(3){grid-column:3/8;margin-top:40px}
+.gal figure:nth-child(4){grid-column:9/13;margin-top:140px}
+.gal .ph{position:relative;overflow:hidden;aspect-ratio:4/5}
+.gal .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.gal figure:hover img{transform:scale(1.04)}
+.gal figcaption{margin-top:12px;font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:760px){.gal figure{grid-column:1/-1 !important;margin-top:0 !important}}
+.man-split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,64px);align-items:center;margin-top:clamp(40px,6vw,72px)}
+.man-split figure{margin:0}
+.semillas-logo{height:clamp(44px,5vw,64px);width:auto;display:block;margin-bottom:28px}
+.man-split img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;display:block}
+.man-split figcaption{margin-top:10px;font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.man-list{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:16px}
+.man-list li{position:relative;padding-left:26px;color:var(--bone);line-height:1.6}
+.man-list li::before{content:"";position:absolute;left:0;top:.55em;width:10px;height:10px;background:var(--accent);transform:skewX(-24deg)}
+.man-list b{color:var(--bone)}
+@media (max-width:760px){.man-split{grid-template-columns:1fr}}
 .eyebrow{color:var(--muted);display:flex;gap:12px;align-items:center;margin-bottom:28px}
 .eyebrow::before{content:"";width:18px;height:10px;background:var(--accent);transform:skewX(-24deg)}
 h2{font-family:var(--f-display);font-weight:900;text-transform:uppercase;line-height:.88;margin:0;font-size:clamp(52px,9vw,140px);text-wrap:balance}
@@ -362,6 +384,28 @@ footer{padding-block:60px calc(28px + env(safe-area-inset-bottom,0px));overflow:
   <!-- MARQUEE -->
   <div class="marquee" aria-hidden="true"><div class="track" id="mq1"><span>Dos pilotos <i class="flag"></i> <em class="serif">un solo sueño</em> <i class="flag"></i> <b class="o">Daytona International Speedway</b> <i class="flag"></i></span></div></div>
 
+  <!-- GALERIA -->
+  <section class="gal" aria-label="Galería">
+    <div class="wrap gal-grid">
+      <figure>
+        <div class="ph"><img src="img/dani-garage.webp" alt="Dani Quintero en el garaje" loading="lazy"></div>
+        <figcaption>Dani · Garaje</figcaption>
+      </figure>
+      <figure>
+        <div class="ph"><img src="img/alejo-cockpit.webp" alt="Alejo Luengas en el cockpit" loading="lazy"></div>
+        <figcaption>Alejo · Cockpit</figcaption>
+      </figure>
+      <figure>
+        <div class="ph"><img src="img/dani-track.webp" alt="Dani Quintero en pista" loading="lazy"></div>
+        <figcaption>Dani · Pista</figcaption>
+      </figure>
+      <figure>
+        <div class="ph"><img src="img/alejo-pit.webp" alt="Alejo Luengas en boxes" loading="lazy"></div>
+        <figcaption>Alejo · Boxes</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <!-- MANIFESTO -->
   <section class="band manifesto">
     <div class="wrap">
@@ -539,13 +583,73 @@ footer{padding-block:60px calc(28px + env(safe-area-inset-bottom,0px));overflow:
   </section>
 
   <!-- ALLIES -->
+  <section class="band" id="carrera">
+    <div class="wrap">
+      <div class="eyebrow mono">WORL1 · La carrera y las semillas</div>
+      <h2>La liga que <span class="serif">se corre en casa</span></h2>
+      <p>WORL1 es la liga nacional de simracing de Colombia. Claro gaming es su aliado fundador y sede: la Sala Claro Gaming en Bogotá, con 8 simuladores idénticos.</p>
+      <div class="ally-row">
+        <div class="ally"><span class="role mono">Semana WORL1 · 7 al 13 de diciembre de 2026</span><p>Lanzamiento oficial, clasificación con 300 pilotos, Súper Sábado con los 24 finalistas y la Gran Final.</p></div>
+        <div class="ally"><span class="role mono">Semillas · 24 becas</span><p>Acceso completo al campeonato para talentos de 14 a 17 años, con selección por convocatoria abierta y jurado.</p></div>
+        <div class="ally"><span class="role mono">Alianza · 2026 – 2028</span><p>Claro gaming aporta la sede, sus medios y respalda SEMILLAS con su marca. WORL1 opera la competencia.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="entrenamiento" style="--accent:var(--daytona)">
+    <div class="wrap">
+      <div class="eyebrow mono">Por qué importa el simracing</div>
+      <h2>Entrenar en casa, <span class="serif">competir en serio</span></h2>
+      <div class="man-split">
+        <figure>
+          <img src="img/manual/cockpit-volante.jpg" alt="Piloto con guantes y volante de simulador profesional" loading="lazy">
+          <figcaption>Simulador profesional · cockpit</figcaption>
+        </figure>
+        <div>
+          <p>El simracing ya es un deporte regulado: campeonatos con premios, equipos y reglamento. Para un piloto, el simulador es el lugar donde se entrena la técnica, la lectura de la pista y la disciplina antes de llegar al circuito real.</p>
+          <ul class="man-list">
+            <li><b>Mismo equipo para todos.</b> El talento y la técnica deciden, no el presupuesto del hardware.</li>
+            <li><b>Datos en cada vuelta.</b> Tiempos y telemetría permiten ver dónde se pierde tiempo y corregirlo en la siguiente sesión.</li>
+            <li><b>Repetición sin costo de pista.</b> Muchas más horas de práctica que en un circuito real, con el mismo cronómetro.</li>
+            <li><b>Disciplina de competencia.</b> Reglamento, comisarios y conducta de pista desde el primer día.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="semillas" style="--accent:var(--daytona)">
+    <div class="wrap">
+      <img class="semillas-logo" src="img/semillas-logo.png" alt="SEMILLAS">
+      <div class="eyebrow mono">Programa SEMILLAS</div>
+      <h2>El talento que no puede pagar la puerta, <span class="serif">entra por mérito</span></h2>
+      <div class="man-split">
+        <div>
+          <p>SEMILLAS existe para que el dinero nunca sea la diferencia entre un talento y su oportunidad. Cada becado es una apuesta de la liga a su propio futuro.</p>
+          <ul class="man-list">
+            <li><b>24 becas de acceso completo</b> para talentos de 14 a 17 años: inscripción, Escuela de Entrenamiento y acompañamiento durante toda la temporada.</li>
+            <li><b>Convocatoria abierta y jurado.</b> Criterios públicos y mérito verificable; nada se sortea.</li>
+            <li><b>Compiten en el campeonato real,</b> en la misma pista, con el mismo cronómetro y la misma tabla que todos.</li>
+            <li><b>Protección de menores.</b> Autorización de acudientes, política de imagen y entorno sin alcohol.</li>
+            <li><b>Calendario:</b> anuncio en la Gran Final del 13 de diciembre de 2026, convocatoria en enero de 2027 y primera generación en la temporada 2027.</li>
+            <li><b>Claro gaming</b> aporta conectividad para los becados, equipamiento de práctica y su marca en el programa.</li>
+          </ul>
+        </div>
+        <figure>
+          <img src="img/manual/sala-claro-gaming.jpg" alt="Sala Claro Gaming con simuladores en línea" loading="lazy">
+          <figcaption>Sala Claro Gaming · Bogotá</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
   <section class="allies band" id="aliados" style="--accent:var(--daytona)">
     <div class="wrap">
       <div class="eyebrow mono">Aliados</div>
       <h2>Quienes empujan <span class="serif">el proyecto</span></h2>
       <div class="ally-row">
-        <div class="ally"><div class="lg"><img src="img/worl1.png" alt="WORL1 World Online Racing League"></div><span class="role mono">Liga · organizador</span><p>World Online Racing League. El torneo de sim racing que conecta el simulador con la pista real.</p></div>
         <div class="ally"><div class="lg"><img src="img/claro-gaming-stack.png" alt="Claro gaming"></div><span class="role mono">Aliado principal</span><p>La casa del gaming de Claro, que respalda a los pilotos colombianos en su camino a Daytona.</p></div>
+        <div class="ally"><div class="lg"><img src="img/worl1.png" alt="WORL1 World Online Racing League"></div><span class="role mono">Liga · organizador</span><p>World Online Racing League. El torneo de sim racing que conecta el simulador con la pista real.</p></div>
         <div class="ally"><div class="lg"><img src="img/takiya.png" alt="TakiYA"></div><span class="role mono">Aliado · entretenimiento</span><p>La taquilla digital que lleva los eventos de WORL1 a los fanáticos.</p></div>
         <div class="ally"><div class="lg"><img src="img/fcad.png" alt="Federación Colombiana de Automovilismo FCAD"></div><span class="role mono">Federación · FIA</span><p>Federación Colombiana de Automovilismo, la entidad que rige el deporte motor en Colombia, afiliada a la FIA.</p></div>
       </div>
